@@ -6,9 +6,13 @@ export default {
     extend: {
       colors: {
         ink: "#0b1020",
+        // ASME brand blue, sampled from the master logo (matches the website).
         brand: {
-          DEFAULT: "#2b58e0",
+          DEFAULT: "#1F63EF",
+          deep: "#275EE7",
+          light: "#5288F2",
           soft: "#A8C7F9",
+          wash: "#EEF3FE",
         },
       },
       fontFamily: {

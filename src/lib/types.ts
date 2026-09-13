@@ -1,41 +1,57 @@
-export const STATUSES = [
+/**
+ * The CRM reads the same Supabase tables the public website writes to:
+ *   - `memberships`      — the /join membership applications
+ *   - `contact_messages` — the /contact enquiry form
+ *
+ * Both store every form field in a single `data` jsonb column, so the schema
+ * never has to change when the forms gain a field. The CRM renders that jsonb
+ * generically (see lib/fields.ts) and only pins down the handful of columns it
+ * shows in list views.
+ */
+
+/** Free-form submission payload: the form's field names mapped to their values.
+ *  Values are usually strings; multi-selects (uses, contributions, reasons) are
+ *  string arrays. */
+export type SubmissionData = Record<string, unknown>;
+
+/** Workflow status the committee sets on a membership from inside the CRM.
+ *  Stored in a `status` column added to the memberships table (see
+ *  supabase/crm-policies.sql). Rows created by the website have no status yet,
+ *  which we treat as "new". */
+export const MEMBER_STATUSES = [
   "new",
   "contacted",
   "member",
-  "declined",
   "paused",
+  "declined",
 ] as const;
+export type MemberStatus = (typeof MEMBER_STATUSES)[number];
 
-export type Status = (typeof STATUSES)[number];
-
-export const STATUS_LABEL: Record<Status, string> = {
+export const MEMBER_STATUS_LABEL: Record<MemberStatus, string> = {
   new: "New",
   contacted: "Contacted",
   member: "Member",
-  declined: "Declined",
   paused: "Paused",
+  declined: "Declined",
 };
 
-export const STATUS_STYLE: Record<Status, string> = {
-  new: "bg-blue-100 text-blue-800",
-  contacted: "bg-amber-100 text-amber-800",
-  member: "bg-emerald-100 text-emerald-800",
-  declined: "bg-slate-200 text-slate-600",
-  paused: "bg-purple-100 text-purple-800",
+export const MEMBER_STATUS_STYLE: Record<MemberStatus, string> = {
+  new: "bg-blue-50 text-brand-deep ring-1 ring-blue-100",
+  contacted: "bg-amber-50 text-amber-700 ring-1 ring-amber-100",
+  member: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100",
+  paused: "bg-slate-100 text-slate-600 ring-1 ring-slate-200",
+  declined: "bg-rose-50 text-rose-700 ring-1 ring-rose-100",
 };
 
-export type Member = {
+export type Membership = {
   id: string;
   created_at: string;
-  updated_at: string;
-  full_name: string;
-  email: string;
-  role: string | null;
-  specialty: string | null;
-  city: string | null;
-  linkedin_url: string | null;
-  message: string | null;
-  source: string | null;
-  status: Status;
-  notes: string | null;
+  status: MemberStatus | null;
+  data: SubmissionData;
+};
+
+export type ContactMessage = {
+  id: string;
+  created_at: string;
+  data: SubmissionData;
 };
