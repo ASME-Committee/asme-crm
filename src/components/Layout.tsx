@@ -1,19 +1,22 @@
 import { NavLink, Outlet } from "react-router-dom";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
-import { ROLE_LABEL } from "@/lib/access";
+import { ROLE_LABEL, canSeePage, type PageKey } from "@/lib/access";
 import { useCurrentAccess } from "@/lib/access-context";
 
-const NAV = [
-  { to: "/dashboard", label: "Dashboard", icon: DashboardIcon },
-  { to: "/members", label: "Members", icon: MembersIcon },
-  { to: "/enquiries", label: "Enquiries", icon: EnquiriesIcon },
-  { to: "/website", label: "Website", icon: WebsiteIcon },
-  { to: "/team", label: "Team", icon: TeamIcon },
-];
+const ALL_NAV = [
+  { to: "/dashboard", page: "dashboard", label: "Dashboard", icon: DashboardIcon },
+  { to: "/members", page: "members", label: "Members", icon: MembersIcon },
+  { to: "/enquiries", page: "enquiries", label: "Enquiries", icon: EnquiriesIcon },
+  { to: "/website", page: "website", label: "Website", icon: WebsiteIcon },
+  { to: "/team", page: "team", label: "Team", icon: TeamIcon },
+] as const;
 
 export function Layout({ session }: { session: Session }) {
   const access = useCurrentAccess();
+  const NAV = ALL_NAV.filter((n) =>
+    n.page === "team" ? access.role === "admin" : canSeePage(access, n.page as PageKey),
+  );
   return (
     <div className="flex min-h-full">
       {/* Sidebar */}
