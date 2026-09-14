@@ -9,6 +9,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import { supabase } from "@/lib/supabase";
+import { fetchAll } from "@/lib/db";
 import type { Membership } from "@/lib/types";
 import { fieldText } from "@/lib/fields";
 import { Page, PageHeader, StatCard, Card, ErrorBanner } from "@/components/ui";
@@ -45,11 +46,11 @@ export function DashboardPage() {
   useEffect(() => {
     (async () => {
       const [m, e] = await Promise.all([
-        supabase.from("memberships").select("id, created_at, status, data").order("created_at", { ascending: false }),
+        fetchAll<Membership>("memberships", "id, created_at, status, data"),
         supabase.from("contact_messages").select("id", { count: "exact", head: true }),
       ]);
       if (m.error) setError(m.error.message);
-      else setMembers((m.data ?? []) as Membership[]);
+      else setMembers(m.data ?? []);
       if (!e.error && typeof e.count === "number") setEnquiryCount(e.count);
       setLoading(false);
     })();

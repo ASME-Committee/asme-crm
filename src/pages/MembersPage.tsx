@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { supabase } from "@/lib/supabase";
 import {
   MEMBER_STATUSES,
   MEMBER_STATUS_LABEL,
@@ -11,6 +10,7 @@ import { memberName, fieldText } from "@/lib/fields";
 import { submissionsToCsv, downloadCsv } from "@/lib/csv";
 import { canEdit } from "@/lib/access";
 import { useCurrentAccess } from "@/lib/access-context";
+import { fetchAll } from "@/lib/db";
 import { DetailDrawer } from "@/components/DetailDrawer";
 import { Page, PageHeader, Button, SearchInput, ErrorBanner, EmptyRow, Card } from "@/components/ui";
 
@@ -28,12 +28,9 @@ export function MembersPage() {
 
   async function load() {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("memberships")
-      .select("id, created_at, status, data")
-      .order("created_at", { ascending: false });
+    const { data, error } = await fetchAll<Membership>("memberships", "id, created_at, status, data");
     if (error) setError(error.message);
-    else setRows((data ?? []) as Membership[]);
+    else setRows(data ?? []);
     setLoading(false);
   }
 
