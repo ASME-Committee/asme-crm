@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { fetchAll } from "@/lib/db";
 import type { ContactMessage } from "@/lib/types";
 import { fieldText, displayValue } from "@/lib/fields";
 import { submissionsToCsv, downloadCsv } from "@/lib/csv";
@@ -15,12 +15,9 @@ export function EnquiriesPage() {
 
   async function load() {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("contact_messages")
-      .select("id, created_at, data")
-      .order("created_at", { ascending: false });
+    const { data, error } = await fetchAll<ContactMessage>("contact_messages", "id, created_at, data");
     if (error) setError(error.message);
-    else setRows((data ?? []) as ContactMessage[]);
+    else setRows(data ?? []);
     setLoading(false);
   }
 
