@@ -2,17 +2,32 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 export function LoginPage() {
+  const [mode, setMode] = useState<"password" | "magic">("password");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
 
-  async function onSubmit(e: React.FormEvent) {
+  async function signInPassword(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
     setError(null);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) setError(error.message);
+    setBusy(false);
+  }
+
+  async function sendMagicLink(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setError(null);
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: window.location.origin + window.location.pathname },
+    });
+    if (error) setError(error.message);
+    else setSent(true);
     setBusy(false);
   }
 
@@ -28,39 +43,64 @@ export function LoginPage() {
           <div className="text-lg font-semibold tracking-tight text-ink">ASME Society CRM</div>
           <p className="mt-1 text-sm text-slate-500">Sign in to manage members and enquiries</p>
         </div>
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Email</label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
-            />
+
+        {sent ? (
+          <div className="rounded-lg bg-emerald-50 px-4 py-6 text-center text-sm text-emerald-800">
+            Check your inbox — we sent a sign-in link to{" "}
+            <span className="font-medium">{email}</span>.
           </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Password</label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
-            />
-          </div>
-          {error && <p className="text-sm text-red-600">{error}</p>}
+        ) : (
+          <form onSubmit={mode === "password" ? signInPassword : sendMagicLink} className="space-y-4">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Email</label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
+              />
+            </div>
+            {mode === "password" && (
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">Password</label>
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
+                />
+              </div>
+            )}
+            {error && <p className="text-sm text-red-600">{error}</p>}
+            <button
+              type="submit"
+              disabled={busy}
+              className="w-full rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-deep disabled:opacity-50"
+            >
+              {busy
+                ? "Working…"
+                : mode === "password"
+                  ? "Sign in"
+                  : "Email me a sign-in link"}
+            </button>
+          </form>
+        )}
+
+        {!sent && (
           <button
-            type="submit"
-            disabled={busy}
-            className="w-full rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition hover:bg-brand/90 disabled:opacity-50"
+            onClick={() => {
+              setMode(mode === "password" ? "magic" : "password");
+              setError(null);
+            }}
+            className="mt-4 w-full text-center text-xs font-medium text-brand-deep hover:underline"
           >
-            {busy ? "Signing in…" : "Sign in"}
+            {mode === "password"
+              ? "First time? Email me a sign-in link instead"
+              : "Sign in with a password instead"}
           </button>
-        </form>
-        <p className="mt-4 text-center text-xs text-slate-400">
-          Accounts are created in the Supabase dashboard (Authentication → Users).
-        </p>
+        )}
       </div>
     </div>
   );

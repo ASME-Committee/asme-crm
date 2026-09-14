@@ -3,6 +3,7 @@ import { supabase } from "@/lib/supabase";
 import {
   MEMBER_STATUSES,
   MEMBER_STATUS_LABEL,
+  MEMBER_STATUS_STYLE,
   type MemberStatus,
   type SubmissionData,
 } from "@/lib/types";
@@ -20,6 +21,7 @@ export function DetailDrawer({
   data,
   memberId,
   status,
+  canEditStatus = true,
   onClose,
   onStatusSaved,
 }: {
@@ -29,6 +31,7 @@ export function DetailDrawer({
   data: SubmissionData;
   memberId?: string;
   status?: MemberStatus | null;
+  canEditStatus?: boolean;
   onClose: () => void;
   onStatusSaved?: (status: MemberStatus) => void;
 }) {
@@ -89,22 +92,32 @@ export function DetailDrawer({
             <div className="text-xs font-medium uppercase tracking-wide text-slate-400">
               Status
             </div>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {MEMBER_STATUSES.map((s) => (
-                <button
-                  key={s}
-                  disabled={saving}
-                  onClick={() => changeStatus(s)}
-                  className={`rounded-full px-3 py-1 text-xs font-medium transition disabled:opacity-50 ${
-                    current === s
-                      ? "bg-brand text-white"
-                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                  }`}
+            {canEditStatus ? (
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {MEMBER_STATUSES.map((s) => (
+                  <button
+                    key={s}
+                    disabled={saving}
+                    onClick={() => changeStatus(s)}
+                    className={`rounded-full px-3 py-1 text-xs font-medium transition disabled:opacity-50 ${
+                      current === s
+                        ? "bg-brand text-white"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
+                  >
+                    {MEMBER_STATUS_LABEL[s]}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="mt-2">
+                <span
+                  className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${MEMBER_STATUS_STYLE[current]}`}
                 >
-                  {MEMBER_STATUS_LABEL[s]}
-                </button>
-              ))}
-            </div>
+                  {MEMBER_STATUS_LABEL[current]}
+                </span>
+              </div>
+            )}
             {error && <p className="mt-2 text-xs text-rose-600">{error}</p>}
           </div>
         )}

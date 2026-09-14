@@ -9,12 +9,16 @@ import {
 } from "@/lib/types";
 import { memberName, fieldText } from "@/lib/fields";
 import { submissionsToCsv, downloadCsv } from "@/lib/csv";
+import { canEdit } from "@/lib/access";
+import { useCurrentAccess } from "@/lib/access-context";
 import { DetailDrawer } from "@/components/DetailDrawer";
 import { Page, PageHeader, Button, SearchInput, ErrorBanner, EmptyRow, Card } from "@/components/ui";
 
 const statusOf = (m: Membership): MemberStatus => m.status ?? "new";
 
 export function MembersPage() {
+  const access = useCurrentAccess();
+  const editable = canEdit(access.role);
   const [rows, setRows] = useState<Membership[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -168,6 +172,7 @@ export function MembersPage() {
           data={selected.data}
           memberId={selected.id}
           status={statusOf(selected)}
+          canEditStatus={editable}
           onClose={() => setSelected(null)}
           onStatusSaved={(next) => {
             setRows((prev) =>

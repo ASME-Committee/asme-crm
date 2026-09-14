@@ -1,6 +1,8 @@
 import { NavLink, Outlet } from "react-router-dom";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
+import { ROLE_LABEL } from "@/lib/access";
+import { useCurrentAccess } from "@/lib/access-context";
 
 const NAV = [
   { to: "/dashboard", label: "Dashboard", icon: DashboardIcon },
@@ -11,6 +13,7 @@ const NAV = [
 ];
 
 export function Layout({ session }: { session: Session }) {
+  const access = useCurrentAccess();
   return (
     <div className="flex min-h-full">
       {/* Sidebar */}
@@ -41,9 +44,10 @@ export function Layout({ session }: { session: Session }) {
           ))}
         </nav>
         <div className="border-t border-slate-100 p-3">
-          <div className="truncate px-2 text-xs text-slate-400" title={session.user.email ?? ""}>
+          <div className="truncate px-2 text-xs font-medium text-slate-600" title={session.user.email ?? ""}>
             {session.user.email}
           </div>
+          <div className="px-2 text-[11px] text-slate-400">{ROLE_LABEL[access.role]}</div>
           <button
             onClick={() => supabase.auth.signOut()}
             className="mt-1 w-full rounded-lg px-2 py-1.5 text-left text-sm font-medium text-slate-600 hover:bg-slate-100"
