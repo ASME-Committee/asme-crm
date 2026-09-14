@@ -15,10 +15,8 @@ export function Layout({ session }: { session: Session }) {
     <div className="flex min-h-full">
       {/* Sidebar */}
       <aside className="hidden w-60 shrink-0 flex-col border-r border-slate-200 bg-white md:flex">
-        <div className="flex h-16 items-center gap-2 px-5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand text-sm font-bold text-white">
-            A
-          </span>
+        <div className="flex h-16 items-center gap-2.5 px-5">
+          <img src={`${import.meta.env.BASE_URL}asme-mark.svg`} alt="ASME" className="h-8 w-8" />
           <div className="leading-tight">
             <div className="text-sm font-semibold text-ink">ASME</div>
             <div className="text-[11px] text-slate-400">Society CRM</div>
@@ -58,7 +56,10 @@ export function Layout({ session }: { session: Session }) {
       {/* Mobile top bar */}
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 md:hidden">
-          <span className="font-semibold text-ink">ASME CRM</span>
+          <span className="flex items-center gap-2 font-semibold text-ink">
+            <img src={`${import.meta.env.BASE_URL}asme-mark.svg`} alt="ASME" className="h-6 w-6" />
+            ASME CRM
+          </span>
           <button
             onClick={() => supabase.auth.signOut()}
             className="text-sm font-medium text-slate-600"

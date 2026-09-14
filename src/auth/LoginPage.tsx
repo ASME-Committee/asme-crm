@@ -20,9 +20,11 @@ export function LoginPage() {
     <div className="flex min-h-full items-center justify-center bg-brand-wash px-4">
       <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
         <div className="mb-6 text-center">
-          <span className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-brand text-lg font-bold text-white">
-            A
-          </span>
+          <img
+            src={`${import.meta.env.BASE_URL}asme-mark.svg`}
+            alt="ASME"
+            className="mx-auto mb-3 h-12 w-12"
+          />
           <div className="text-lg font-semibold tracking-tight text-ink">ASME Society CRM</div>
           <p className="mt-1 text-sm text-slate-500">Sign in to manage members and enquiries</p>
         </div>
