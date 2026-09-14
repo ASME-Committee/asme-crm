@@ -26,6 +26,7 @@ export function TeamPage({ session }: { session: Session }) {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<Role>("editor");
   const [inviting, setInviting] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
 
   async function load() {
     setLoading(true);
@@ -47,15 +48,34 @@ export function TeamPage({ session }: { session: Session }) {
     const clean = email.trim().toLowerCase();
     if (!clean) return;
     setError(null);
+    setNotice(null);
     setInviting(true);
+
+    // 1. Add them to the allowlist (this is what grants access).
     const { error } = await supabase
       .from("crm_team")
       .insert({ email: clean, role, active: true, invited_by: session.user.email });
-    setInviting(false);
     if (error) {
+      setInviting(false);
       setError(error.code === "23505" ? "That email is already on the team." : error.message);
       return;
     }
+
+    // 2. Email them a sign-in link so they can set up access without a password.
+    //    If the mail can't send (e.g. Supabase email rate limit), they're still
+    //    on the team and can request a link themselves from the login screen.
+    const redirect = window.location.origin + window.location.pathname;
+    const { error: mailErr } = await supabase.auth.signInWithOtp({
+      email: clean,
+      options: { shouldCreateUser: true, emailRedirectTo: redirect },
+    });
+    setInviting(false);
+    setNotice(
+      mailErr
+        ? `${clean} was added, but the invite email didn't send (${mailErr.message}). They can still sign in via "Email me a sign-in link".`
+        : `Invited ${clean} — we emailed them a sign-in link.`,
+    );
+
     setEmail("");
     setRole("editor");
     load();
@@ -109,8 +129,8 @@ export function TeamPage({ session }: { session: Session }) {
         <Card className="mb-6 p-5">
           <h2 className="text-sm font-semibold text-ink">Invite a team member</h2>
           <p className="mt-1 text-sm text-slate-500">
-            Add their email and role. They sign in at this site with that email (password or the
-            "email me a sign-in link" option) and get access immediately.
+            Add their email and role. We email them a secure sign-in link so they can set up access
+            with no password. They can also request a link themselves from the login screen.
           </p>
           <form onSubmit={invite} className="mt-4 flex flex-wrap items-end gap-3">
             <div className="flex-1">
@@ -145,6 +165,11 @@ export function TeamPage({ session }: { session: Session }) {
           <p className="mt-3 text-xs text-slate-400">
             {ROLES.map((r) => `${ROLE_LABEL[r]}: ${ROLE_HINT[r]}`).join("  ·  ")}
           </p>
+          {notice && (
+            <p className="mt-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+              {notice}
+            </p>
+          )}
         </Card>
       )}
 
