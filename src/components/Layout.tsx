@@ -8,6 +8,7 @@ const ALL_NAV = [
   { to: "/dashboard", page: "dashboard", label: "Dashboard", icon: DashboardIcon },
   { to: "/members", page: "members", label: "Members", icon: MembersIcon },
   { to: "/enquiries", page: "enquiries", label: "Enquiries", icon: EnquiriesIcon },
+  { to: "/newsletter", page: "newsletter", label: "Newsletter", icon: NewsletterIcon },
   { to: "/website", page: "website", label: "Website", icon: WebsiteIcon },
   { to: "/team", page: "team", label: "Team", icon: TeamIcon },
 ] as const;
@@ -133,6 +134,14 @@ function EnquiriesIcon() {
   return (
     <svg {...iconProps()}>
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+    </svg>
+  );
+}
+function NewsletterIcon() {
+  return (
+    <svg {...iconProps()}>
+      <rect x="2" y="4" width="20" height="16" rx="2" />
+      <path d="m22 7-10 5L2 7" />
     </svg>
   );
 }

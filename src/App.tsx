@@ -11,6 +11,7 @@ import { Layout } from "@/components/Layout";
 import { DashboardPage } from "@/pages/DashboardPage";
 import { MembersPage } from "@/pages/MembersPage";
 import { EnquiriesPage } from "@/pages/EnquiriesPage";
+import { NewsletterPage } from "@/pages/NewsletterPage";
 import { TeamPage } from "@/pages/TeamPage";
 import { WebsitePage } from "@/pages/WebsitePage";
 
@@ -62,6 +63,7 @@ function AuthedApp({ session }: { session: Session }) {
             <Route path="dashboard" element={<PageGuard page="dashboard"><DashboardPage /></PageGuard>} />
             <Route path="members" element={<PageGuard page="members"><MembersPage /></PageGuard>} />
             <Route path="enquiries" element={<PageGuard page="enquiries"><EnquiriesPage /></PageGuard>} />
+            <Route path="newsletter" element={<PageGuard page="newsletter"><NewsletterPage /></PageGuard>} />
             <Route path="website" element={<PageGuard page="website"><WebsitePage /></PageGuard>} />
             <Route path="team" element={<AdminGuard><TeamPage session={session} /></AdminGuard>} />
             <Route path="*" element={<IndexRedirect />} />
