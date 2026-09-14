@@ -102,3 +102,24 @@ export function memberName(data: SubmissionData): string {
 export function fieldText(data: SubmissionData, key: string): string {
   return displayValue(data[key]);
 }
+
+/**
+ * The atomic "how are you using your clinical degree" selections for one member.
+ * A select-all-that-apply answer, so this returns 0..n values and a member can
+ * count toward several. New form submissions store an array in `uses`; the
+ * imported cohort stores a comma-joined string in `currentUse` (no option
+ * contains a comma, so splitting is safe).
+ */
+export function usageValues(data: SubmissionData): string[] {
+  if (Array.isArray(data.uses) && data.uses.length) {
+    return data.uses.map((v) => String(v).trim()).filter(Boolean);
+  }
+  const cu = data.currentUse;
+  if (typeof cu === "string" && cu.trim()) {
+    return cu
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+  return [];
+}

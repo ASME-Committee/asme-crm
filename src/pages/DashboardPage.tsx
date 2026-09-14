@@ -11,7 +11,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import { fetchAll } from "@/lib/db";
 import type { Membership } from "@/lib/types";
-import { fieldText } from "@/lib/fields";
+import { fieldText, usageValues } from "@/lib/fields";
 import { Page, PageHeader, StatCard, Card, ErrorBanner } from "@/components/ui";
 
 const BRAND = "#1F63EF";
@@ -77,8 +77,9 @@ export function DashboardPage() {
     () => topCounts(members.map((m) => fieldText(m.data, "based"))),
     [members],
   );
-  const byProfession = useMemo(
-    () => topCounts(members.map((m) => fieldText(m.data, "clinicalProfession"))),
+  // "Select all that apply", so a member counts toward each option they picked.
+  const byUsage = useMemo(
+    () => topCounts(members.flatMap((m) => usageValues(m.data)), 8),
     [members],
   );
 
@@ -108,8 +109,9 @@ export function DashboardPage() {
           <ChartBox data={byState} layout="vertical" />
         </Card>
         <Card className="p-5">
-          <h2 className="mb-4 text-sm font-semibold text-ink">By clinical profession</h2>
-          <ChartBox data={byProfession} layout="vertical" />
+          <h2 className="text-sm font-semibold text-ink">How members use their clinical degree</h2>
+          <p className="mb-4 mt-0.5 text-xs text-slate-400">Select all that apply — members can count in more than one.</p>
+          <ChartBox data={byUsage} layout="vertical" />
         </Card>
       </div>
     </Page>
