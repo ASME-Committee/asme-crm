@@ -23,6 +23,7 @@ export const PAGES = [
   { key: "dashboard", label: "Dashboard", path: "/dashboard" },
   { key: "members", label: "Members", path: "/members" },
   { key: "enquiries", label: "Enquiries", path: "/enquiries" },
+  { key: "newsletter", label: "Newsletter", path: "/newsletter" },
   { key: "website", label: "Website", path: "/website" },
 ] as const;
 export type PageKey = (typeof PAGES)[number]["key"];
