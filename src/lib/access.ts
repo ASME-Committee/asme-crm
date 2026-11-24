@@ -24,6 +24,7 @@ export const PAGES = [
   { key: "members", label: "Members", path: "/members" },
   { key: "enquiries", label: "Enquiries", path: "/enquiries" },
   { key: "newsletter", label: "Newsletter", path: "/newsletter" },
+  { key: "linkedin", label: "LinkedIn", path: "/linkedin" },
   { key: "website", label: "Website", path: "/website" },
 ] as const;
 export type PageKey = (typeof PAGES)[number]["key"];
